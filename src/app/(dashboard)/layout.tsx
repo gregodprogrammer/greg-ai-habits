@@ -1,12 +1,13 @@
 import Link from 'next/link';
 import { LogoutButton } from '@/shared/ui/logout-button';
+import { ROUTES } from '@/config/constants';
 
 const navItems = [
-  { href: '/dashboard', label: 'Dashboard' },
-  { href: '/habits', label: 'Habits' },
-  { href: '/analytics', label: 'Analytics' },
-  { href: '/ai-coach', label: 'AI Coach' },
-  { href: '/profile', label: 'Profile' },
+  { href: ROUTES.DASHBOARD, label: 'Dashboard' },
+  { href: ROUTES.HABITS, label: 'Habits' },
+  { href: ROUTES.ANALYTICS, label: 'Analytics' },
+  { href: ROUTES.AI_COACH, label: 'AI Coach' },
+  { href: ROUTES.PROFILE, label: 'Profile' },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
