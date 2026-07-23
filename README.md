@@ -1,36 +1,136 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Productivity Platform
+
+A full-stack productivity platform built with Next.js 16, TypeScript, and PostgreSQL. The platform is structured as a suite of integrated modules sharing one authentication system, one database, and one architectural foundation.
+
+## Modules
+
+| Module | Status |
+|---|---|
+| AI Habits | Complete |
+| AI Budget Tracker | In progress |
+| AI Task Manager | Planned |
+| AI CRM | Planned |
+| AI Knowledge Base | Planned |
+| AI Resume & Career Assistant | Planned |
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 16 (App Router, Turbopack) |
+| Language | TypeScript (strict mode) |
+| Styling | Tailwind CSS v4 |
+| Database | PostgreSQL via Supabase |
+| Authentication | Supabase Auth (HTTP-only cookie sessions) |
+| AI | OpenAI API (provider-abstracted) |
+| Validation | Zod |
+| Testing | Jest |
+| Containerisation | Docker |
+| CI | GitHub Actions |
+
+## Architecture
+
+The project follows a layered, dependency-injected architecture:
+
+```
+src/
+├── app/              # Next.js App Router — routes, layouts, pages
+├── features/         # Feature modules (habits, budget, auth, analytics, ai)
+│   └── <module>/
+│       ├── dtos/                  # Zod-validated input schemas
+│       ├── *.repository.ts        # Database access (Supabase)
+│       ├── *.repository.interface.ts
+│       ├── *.service.ts           # Business logic
+│       ├── *.service.interface.ts
+│       └── __tests__/             # Unit tests with mocked dependencies
+├── providers/        # Vendor adapters (OpenAI, Supabase auth, storage)
+├── infrastructure/   # Logger, database client, migrations
+├── middleware/       # Authentication middleware
+├── shared/           # Shared types, utilities, UI components
+└── config/           # Environment validation, application constants
+```
+
+**Principles:**
+- Business logic lives only in Services
+- Database access lives only in Repositories
+- API routes are thin (auth → parse → service → respond)
+- Providers are abstracted behind interfaces (vendor-swappable)
+- All dependencies are constructor-injected
+- All environment variables are Zod-validated at startup
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 20+
+- A Supabase project (free tier works)
+- An OpenAI API key
+
+### Environment Variables
+
+Copy `.env.example` to `.env.local` and fill in the values:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+| Variable | Description |
+|---|---|
+| `DATABASE_URL` | PostgreSQL connection string |
+| `SUPABASE_URL` | Supabase project URL |
+| `SUPABASE_ANON_KEY` | Supabase anonymous key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key |
+| `JWT_SECRET` | Secret for session signing (min 32 chars) |
+| `OPENAI_API_KEY` | OpenAI API key |
+| `OPENAI_MODEL` | Model to use (default: `gpt-4o-mini`) |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Database
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Run the initial migration against your Supabase PostgreSQL database:
 
-## Learn More
+```bash
+psql $DATABASE_URL -f src/infrastructure/db/migrations/001_initial.sql
+```
 
-To learn more about Next.js, take a look at the following resources:
+### Development
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm install
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Open [http://localhost:3000](http://localhost:3000).
 
-## Deploy on Vercel
+### Production Build
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run build
+npm start
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Docker
+
+```bash
+docker compose up --build
+```
+
+### Tests
+
+```bash
+npm test
+npm run test:coverage
+```
+
+## CI/CD
+
+GitHub Actions runs on every push to `main`:
+- TypeScript type check
+- ESLint
+- Jest unit tests
+- Production build
+
+See `.github/workflows/ci.yml` for the full pipeline.
+
+## Deployment
+
+The application builds as a standalone Next.js output (`output: 'standalone'`) and is deployable to any Node.js 20+ environment, container, or Kubernetes cluster.
