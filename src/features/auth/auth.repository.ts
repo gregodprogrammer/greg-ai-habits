@@ -2,6 +2,7 @@ import { SupabaseClient } from '@supabase/supabase-js';
 import { IAuthRepository } from './auth.repository.interface';
 import { User, UUID } from '@/shared/types';
 import { ILogger } from '@/infrastructure/logger/logger.interface';
+import { AppError, NotFoundError } from '@/shared/utils/errors';
 
 export class AuthRepository implements IAuthRepository {
   constructor(
@@ -11,10 +12,7 @@ export class AuthRepository implements IAuthRepository {
 
   async findById(id: UUID): Promise<User | null> {
     const { data, error } = await this.db.from('users').select('*').eq('id', id).single();
-    if (error) {
-      this.logger.debug('AuthRepository.findById: no result', { id });
-      return null;
-    }
+    if (error) return null;
     return data as User;
   }
 
@@ -27,13 +25,16 @@ export class AuthRepository implements IAuthRepository {
   async create(input: { id: UUID; email: string; display_name?: string }): Promise<User> {
     const { data, error } = await this.db
       .from('users')
-      .insert(input)
+      .upsert(
+        { id: input.id, email: input.email, display_name: input.display_name ?? null },
+        { onConflict: 'id' },
+      )
       .select()
       .single();
 
     if (error || !data) {
       this.logger.error('AuthRepository.create failed', error);
-      throw new Error('Failed to create user record');
+      throw new AppError('DB_ERROR', 'Failed to create user record', 500);
     }
     return data as User;
   }
@@ -48,7 +49,7 @@ export class AuthRepository implements IAuthRepository {
 
     if (error || !data) {
       this.logger.error('AuthRepository.updateDisplayName failed', error);
-      throw new Error('Failed to update display name');
+      throw new NotFoundError('User');
     }
     return data as User;
   }

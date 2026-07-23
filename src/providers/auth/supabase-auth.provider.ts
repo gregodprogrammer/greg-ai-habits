@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { IAuthProvider, AuthSession } from './auth.provider.interface';
 import { ILogger } from '@/infrastructure/logger/logger.interface';
-import { UnauthorizedError } from '@/shared/utils/errors';
+import { ConflictError, UnauthorizedError } from '@/shared/utils/errors';
 
 export class SupabaseAuthProvider implements IAuthProvider {
   private readonly client;
@@ -23,13 +23,21 @@ export class SupabaseAuthProvider implements IAuthProvider {
       email_confirm: true,
     });
 
-    if (error || !data.user) {
+    if (error) {
       this.logger.error('Supabase signUp failed', error);
-      throw new UnauthorizedError(error?.message ?? 'Registration failed');
+      if (error.message.toLowerCase().includes('already registered') ||
+          error.message.toLowerCase().includes('already exists') ||
+          error.message.toLowerCase().includes('duplicate')) {
+        throw new ConflictError('An account with that email already exists');
+      }
+      throw new UnauthorizedError(error.message);
     }
 
-    const signInResult = await this.signIn(email, password);
-    return signInResult;
+    if (!data.user) {
+      throw new UnauthorizedError('Registration failed');
+    }
+
+    return this.signIn(email, password);
   }
 
   async signIn(email: string, password: string): Promise<AuthSession> {
@@ -37,7 +45,7 @@ export class SupabaseAuthProvider implements IAuthProvider {
 
     if (error || !data.session) {
       this.logger.error('Supabase signIn failed', error);
-      throw new UnauthorizedError('Invalid credentials');
+      throw new UnauthorizedError('Invalid email or password');
     }
 
     return {
@@ -48,9 +56,11 @@ export class SupabaseAuthProvider implements IAuthProvider {
   }
 
   async signOut(accessToken: string): Promise<void> {
+    // admin.signOut(jwt) revokes the specific session identified by the JWT
     const { error } = await this.client.auth.admin.signOut(accessToken);
     if (error) {
-      this.logger.warn('Supabase signOut error', { error: error.message });
+      // Non-fatal: cookie will be cleared regardless; log and continue
+      this.logger.warn('Supabase signOut error (non-fatal)', { error: error.message });
     }
   }
 
@@ -58,7 +68,7 @@ export class SupabaseAuthProvider implements IAuthProvider {
     const { data, error } = await this.client.auth.getUser(accessToken);
 
     if (error || !data.user) {
-      throw new UnauthorizedError('Invalid or expired token');
+      throw new UnauthorizedError('Invalid or expired session');
     }
 
     return {
