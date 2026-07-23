@@ -5,6 +5,7 @@ import { ROUTES } from '@/config/constants';
 const navItems = [
   { href: ROUTES.DASHBOARD, label: 'Dashboard' },
   { href: ROUTES.HABITS, label: 'Habits' },
+  { href: ROUTES.BUDGET, label: 'Budget' },
   { href: ROUTES.ANALYTICS, label: 'Analytics' },
   { href: ROUTES.AI_COACH, label: 'AI Coach' },
   { href: ROUTES.PROFILE, label: 'Profile' },

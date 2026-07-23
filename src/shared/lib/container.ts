@@ -12,6 +12,8 @@ import { AnalyticsRepository } from '@/features/analytics/analytics.repository';
 import { AnalyticsService } from '@/features/analytics/analytics.service';
 import { ConversationRepository } from '@/features/ai/conversation.repository';
 import { AIService } from '@/features/ai/ai.service';
+import { BudgetRepository } from '@/features/budget/budget.repository';
+import { BudgetService } from '@/features/budget/budget.service';
 
 function buildContainer() {
   const logger = new ConsoleLogger('App');
@@ -33,11 +35,13 @@ function buildContainer() {
   const habitsRepository = new HabitsRepository(db, logger);
   const analyticsRepository = new AnalyticsRepository(db, logger);
   const conversationRepository = new ConversationRepository(db, logger);
+  const budgetRepository = new BudgetRepository(db, logger);
 
   const authService = new AuthService(authProvider, authRepository, logger);
   const habitsService = new HabitsService(habitsRepository, logger);
   const analyticsService = new AnalyticsService(analyticsRepository, logger);
   const aiService = new AIService(aiProvider, conversationRepository, logger);
+  const budgetService = new BudgetService(budgetRepository, logger);
 
   return {
     logger,
@@ -45,6 +49,7 @@ function buildContainer() {
     habitsService,
     analyticsService,
     aiService,
+    budgetService,
     storageProvider,
   };
 }
