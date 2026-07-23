@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { LogoutButton } from '@/shared/ui/logout-button';
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard' },
@@ -22,6 +23,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             {item.label}
           </Link>
         ))}
+        <div className="mt-auto pt-4 border-t border-border">
+          <LogoutButton />
+        </div>
       </aside>
       <main className="flex-1 p-8">{children}</main>
     </div>
