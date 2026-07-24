@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { AUTH, PROTECTED_ROUTES, AUTH_ONLY_ROUTES, ROUTES } from '@/config/constants';
+import { env } from '@/config/env';
 
 export const config = {
   matcher: ['/((?!_next/static|_next/image|favicon.ico|api/).*)'],
@@ -8,10 +9,7 @@ export const config = {
 
 async function isAuthenticated(token: string): Promise<boolean> {
   try {
-    const client = createClient(
-      process.env.SUPABASE_URL!,
-      process.env.SUPABASE_ANON_KEY!,
-    );
+    const client = createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY);
     const {
       data: { user },
     } = await client.auth.getUser(token);
