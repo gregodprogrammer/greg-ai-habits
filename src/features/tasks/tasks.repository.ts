@@ -153,12 +153,12 @@ export class TasksRepository implements ITasksRepository {
       .select('status, priority, due_date, project_id, project:task_projects(name)')
       .eq('user_id', userId);
 
-    const all = (tasks ?? []) as Array<{
+    const all = (tasks ?? []) as unknown as Array<{
       status: string;
       priority: string;
       due_date: string | null;
       project_id: string | null;
-      project: { name: string }[] | null;
+      project: { name: string } | null;
     }>;
 
     const active = all.filter((t) => t.status !== 'cancelled');
@@ -189,7 +189,7 @@ export class TasksRepository implements ITasksRepository {
       const key = t.project_id ?? '__none__';
       const existing = projectMap.get(key);
       if (existing) existing.count++;
-      else projectMap.set(key, { name: t.project?.[0]?.name ?? 'No project', count: 1 });
+      else projectMap.set(key, { name: t.project?.name ?? 'No project', count: 1 });
     }
 
     return {
