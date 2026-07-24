@@ -19,14 +19,9 @@ export async function GET(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   return handleRoute(async () => {
     const user = await requireAuth(req);
-    const body = UpdateProfileDto.parse(await req.json());
+    const { display_name } = UpdateProfileDto.parse(await req.json());
     const { authService } = getContainer();
-    const updated = await authService.getCurrentUser(
-      req.headers.get('authorization')!.slice(7),
-    );
-    void body;
-    void updated;
-    // placeholder: full implementation in feature phase
-    return successResponse(user);
+    const updated = await authService.updateProfile(user.id, display_name);
+    return successResponse(updated);
   });
 }
