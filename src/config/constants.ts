@@ -12,6 +12,7 @@ export const ROUTES = {
   ANALYTICS: '/analytics',
   AI_COACH: '/ai-coach',
   BUDGET: '/budget',
+  TASKS: '/tasks',
   PROFILE: '/profile',
 } as const;
 
@@ -22,6 +23,7 @@ export const PROTECTED_ROUTES = [
   ROUTES.ANALYTICS,
   ROUTES.AI_COACH,
   ROUTES.BUDGET,
+  ROUTES.TASKS,
   ROUTES.PROFILE,
 ] as const;
 

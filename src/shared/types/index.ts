@@ -99,6 +99,45 @@ export interface BudgetSummary {
   monthly_trend: MonthlyTrend[];
 }
 
+export type TaskStatus = 'todo' | 'in_progress' | 'done' | 'cancelled';
+export type TaskPriority = 'low' | 'medium' | 'high' | 'urgent';
+
+export interface TaskProject extends Timestamps {
+  id: UUID;
+  user_id: UUID;
+  name: string;
+  color: string;
+  description: string | null;
+  is_archived: boolean;
+}
+
+export interface Task extends Timestamps {
+  id: UUID;
+  user_id: UUID;
+  project_id: UUID | null;
+  project?: TaskProject;
+  title: string;
+  description: string | null;
+  status: TaskStatus;
+  priority: TaskPriority;
+  due_date: string | null;
+  completed_at: string | null;
+}
+
+export interface TaskStats {
+  total: number;
+  todo: number;
+  in_progress: number;
+  done: number;
+  cancelled: number;
+  overdue: number;
+  due_today: number;
+  due_this_week: number;
+  completion_rate: number;
+  by_priority: { priority: TaskPriority; count: number }[];
+  by_project: { project_id: UUID | null; project_name: string; count: number }[];
+}
+
 export interface AnalyticsSummary {
   total_habits: number;
   active_habits: number;

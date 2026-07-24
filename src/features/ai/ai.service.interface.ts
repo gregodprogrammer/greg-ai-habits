@@ -1,4 +1,4 @@
-import { AIConversation, BudgetSummary, UUID } from '@/shared/types';
+import { AIConversation, BudgetSummary, TaskStats, UUID } from '@/shared/types';
 
 export interface ChatResponse {
   reply: string;
@@ -10,4 +10,6 @@ export interface IAIService {
   getHistory(userId: UUID): Promise<AIConversation[]>;
   budgetChat(userId: UUID, message: string, summary?: BudgetSummary): Promise<ChatResponse>;
   getBudgetHistory(userId: UUID): Promise<AIConversation[]>;
+  taskChat(userId: UUID, message: string, stats?: TaskStats): Promise<ChatResponse>;
+  getTaskHistory(userId: UUID): Promise<AIConversation[]>;
 }
