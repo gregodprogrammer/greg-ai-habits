@@ -74,4 +74,24 @@ describe('HabitsService', () => {
       expect(result).toEqual(mockHabit);
     });
   });
+
+  describe('deleteEntry', () => {
+    it('verifies ownership then deletes the entry with correct habitId and date', async () => {
+      mockRepo.findById.mockResolvedValue(mockHabit);
+      mockRepo.deleteEntry.mockResolvedValue(undefined);
+      await service.deleteEntry('habit-1', 'user-1', '2024-07-25');
+      expect(mockRepo.findById).toHaveBeenCalledWith('habit-1');
+      expect(mockRepo.deleteEntry).toHaveBeenCalledWith('habit-1', '2024-07-25');
+    });
+
+    it('throws NotFoundError when habit does not exist', async () => {
+      mockRepo.findById.mockResolvedValue(null);
+      await expect(service.deleteEntry('habit-1', 'user-1', '2024-07-25')).rejects.toThrow(NotFoundError);
+    });
+
+    it('throws ForbiddenError when habit belongs to another user', async () => {
+      mockRepo.findById.mockResolvedValue(mockHabit);
+      await expect(service.deleteEntry('habit-1', 'user-2', '2024-07-25')).rejects.toThrow(ForbiddenError);
+    });
+  });
 });
