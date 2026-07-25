@@ -5,6 +5,16 @@ import { getContainer } from '@/shared/lib/container';
 import { successResponse } from '@/shared/utils/api-response';
 import { handleRoute } from '@/shared/utils/route-handler';
 
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  return handleRoute(async () => {
+    const user = await requireAuth(req);
+    const { id } = await params;
+    const { tasksService } = getContainer();
+    const task = await tasksService.getTaskById(id, user.id);
+    return successResponse(task);
+  });
+}
+
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   return handleRoute(async () => {
     const user = await requireAuth(req);
