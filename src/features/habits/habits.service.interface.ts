@@ -10,4 +10,5 @@ export interface IHabitsService {
   update(id: UUID, userId: UUID, dto: UpdateHabitDtoType): Promise<Habit>;
   delete(id: UUID, userId: UUID): Promise<void>;
   logEntry(habitId: UUID, userId: UUID, dto: LogEntryDtoType): Promise<HabitEntry>;
+  deleteEntry(habitId: UUID, userId: UUID, date: string): Promise<void>;
 }

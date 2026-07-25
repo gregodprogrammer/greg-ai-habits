@@ -43,4 +43,9 @@ export class HabitsService implements IHabitsService {
     await this.getById(habitId, userId);
     return this.habitsRepository.logEntry(habitId, userId, dto.logged_date, dto.note);
   }
+
+  async deleteEntry(habitId: UUID, userId: UUID, date: string): Promise<void> {
+    await this.getById(habitId, userId);
+    await this.habitsRepository.deleteEntry(habitId, date);
+  }
 }
