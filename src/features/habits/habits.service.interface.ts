@@ -11,4 +11,6 @@ export interface IHabitsService {
   delete(id: UUID, userId: UUID): Promise<void>;
   logEntry(habitId: UUID, userId: UUID, dto: LogEntryDtoType): Promise<HabitEntry>;
   deleteEntry(habitId: UUID, userId: UUID, date: string): Promise<void>;
+  getEntries(habitId: UUID, userId: UUID, from: string, to: string): Promise<HabitEntry[]>;
+  getAllEntries(userId: UUID, from: string, to: string): Promise<HabitEntry[]>;
 }

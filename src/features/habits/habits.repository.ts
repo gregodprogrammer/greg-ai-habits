@@ -46,11 +46,12 @@ export class HabitsRepository implements IHabitsRepository {
     return habit as Habit;
   }
 
-  async update(id: UUID, data: UpdateHabitDtoType): Promise<Habit> {
+  async update(id: UUID, userId: UUID, data: UpdateHabitDtoType): Promise<Habit> {
     const { data: habit, error } = await this.db
       .from('habits')
       .update(data)
       .eq('id', id)
+      .eq('user_id', userId)
       .select()
       .single();
 
@@ -61,8 +62,12 @@ export class HabitsRepository implements IHabitsRepository {
     return habit as Habit;
   }
 
-  async delete(id: UUID): Promise<void> {
-    const { error } = await this.db.from('habits').delete().eq('id', id);
+  async delete(id: UUID, userId: UUID): Promise<void> {
+    const { error } = await this.db
+      .from('habits')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', userId);
     if (error) {
       this.logger.error('HabitsRepository.delete failed', error);
       throw new Error('Failed to delete habit');
@@ -72,7 +77,13 @@ export class HabitsRepository implements IHabitsRepository {
   async logEntry(habitId: UUID, userId: UUID, date: string, note?: string): Promise<HabitEntry> {
     const { data, error } = await this.db
       .from('habit_entries')
-      .upsert({ habit_id: habitId, user_id: userId, logged_date: date, note: note ?? null })
+      // onConflict mirrors the UNIQUE(habit_id, logged_date) constraint so that
+      // re-logging the same habit on the same day updates the note rather than
+      // throwing a constraint violation.
+      .upsert(
+        { habit_id: habitId, user_id: userId, logged_date: date, note: note ?? null },
+        { onConflict: 'habit_id,logged_date' },
+      )
       .select()
       .single();
 
@@ -84,7 +95,28 @@ export class HabitsRepository implements IHabitsRepository {
   }
 
   async deleteEntry(habitId: UUID, date: string): Promise<void> {
-    await this.db.from('habit_entries').delete().eq('habit_id', habitId).eq('logged_date', date);
+    const { error } = await this.db
+      .from('habit_entries')
+      .delete()
+      .eq('habit_id', habitId)
+      .eq('logged_date', date);
+    if (error) {
+      this.logger.error('HabitsRepository.deleteEntry failed', error);
+      throw new Error('Failed to delete habit entry');
+    }
+  }
+
+  async findCountByUser(userId: UUID): Promise<number> {
+    const { count, error } = await this.db
+      .from('habits')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .eq('is_archived', false);
+    if (error) {
+      this.logger.error('HabitsRepository.findCountByUser failed', error);
+      return 0;
+    }
+    return count ?? 0;
   }
 
   async getEntriesByUser(userId: UUID, from: string, to: string): Promise<HabitEntry[]> {

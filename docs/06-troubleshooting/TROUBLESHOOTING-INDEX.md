@@ -7,8 +7,8 @@
 | **Status** | Active |
 | **Owner** | Greg Odi |
 | **Maintainer** | Documentation Engineer (Claude Code) |
-| **Last Updated** | 2026-08-01 |
-| **Related Documents** | [SESSION-001](../00-project-journal/SESSION-001.md) |
+| **Last Updated** | 2026-08-03 |
+| **Related Documents** | [SESSION-001](../00-project-journal/SESSION-001.md) · [SESSION-003](../00-project-journal/SESSION-003.md) |
 
 ---
 
@@ -16,7 +16,13 @@
 
 | # | Error / Issue | Module | Status | Session | Resolution |
 |---|---|---|---|---|---|
-| 001 | "Failed to create user record" on registration | Auth | **Open** | SESSION-001 | See below |
+| 001 | "Failed to create user record" on registration | Auth | **Open** | SESSION-001/002 | Run `node scripts/test-supabase.mjs`; check raw error in API response `details` field |
+| 002 | Re-logging a habit on the same day returns DB error | Habits | **Resolved** | SESSION-003 | Added `onConflict: 'habit_id,logged_date'` to upsert |
+| 003 | "Log Today" always shows on page refresh | Habits | **Resolved** | SESSION-003 | Frontend now fetches today's entries on mount |
+| 004 | No way to view or restore archived habits | Habits | **Resolved** | SESSION-003 | Added Archived tab with Restore button |
+| 005 | Description cannot be cleared on edit | Habits | **Resolved** | SESSION-003 | Frontend now sends `null` explicitly |
+| 006 | Habit limit not enforced | Habits | **Resolved** | SESSION-003 | Service now checks `findCountByUser` before create |
+| 007 | `deleteEntry` silently swallowed errors | Habits | **Resolved** | SESSION-003 | Repository now checks error and throws |
 
 ---
 
