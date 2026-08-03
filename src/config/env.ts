@@ -4,7 +4,9 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   PORT: z.coerce.number().default(3000),
 
-  DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
+  // Optional: only needed for direct Postgres access (e.g. Drizzle, pgclient).
+  // The app currently uses Supabase JS; this var is not consumed at runtime.
+  DATABASE_URL: z.string().optional(),
 
   SUPABASE_URL: z.string().url('SUPABASE_URL must be a valid URL'),
   SUPABASE_ANON_KEY: z.string().min(1, 'SUPABASE_ANON_KEY is required'),

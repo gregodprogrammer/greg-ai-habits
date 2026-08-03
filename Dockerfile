@@ -9,6 +9,8 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+# Enable standalone output for Docker; Vercel uses its own pipeline without this flag.
+ENV NEXT_STANDALONE=true
 RUN npm run build
 
 # Stage 3: Production runner

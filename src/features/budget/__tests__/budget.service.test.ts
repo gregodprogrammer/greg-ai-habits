@@ -123,7 +123,7 @@ describe('BudgetService', () => {
     it('delegates to repository', async () => {
       const mockCat = { id: 'cat-1', user_id: 'user-1', name: 'Food', type: 'expense' as const, color: '#6366f1', icon: null, is_archived: false, created_at: '', updated_at: '' };
       mockRepo.createCategory.mockResolvedValue(mockCat);
-      const dto = { name: 'Food', type: 'expense' as const };
+      const dto = { name: 'Food', type: 'expense' as const, color: '#6366f1' };
       const result = await service.createCategory('user-1', dto);
       expect(result).toEqual(mockCat);
     });

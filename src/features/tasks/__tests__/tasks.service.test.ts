@@ -134,7 +134,7 @@ describe('TasksService', () => {
   describe('createProject', () => {
     it('delegates to repository', async () => {
       mockRepo.createProject.mockResolvedValue(mockProject);
-      const result = await service.createProject('user-1', { name: 'Work' });
+      const result = await service.createProject('user-1', { name: 'Work', color: '#6366f1' });
       expect(result).toEqual(mockProject);
     });
   });
