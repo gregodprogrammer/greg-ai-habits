@@ -33,8 +33,15 @@ export class AuthRepository implements IAuthRepository {
       .single();
 
     if (error || !data) {
-      this.logger.error('AuthRepository.create failed', error);
-      throw new AppError('DB_ERROR', 'Failed to create user record', 500);
+      this.logger.error('AuthRepository.create failed', {
+        postgrest: { code: error?.code, message: error?.message, hint: error?.hint, details: error?.details },
+        input: { id: input.id, email: input.email },
+      });
+      const devDetails =
+        process.env.NODE_ENV !== 'production'
+          ? { supabase: { code: error?.code, message: error?.message, hint: error?.hint } }
+          : undefined;
+      throw new AppError('DB_ERROR', 'Failed to create user record', 500, devDetails);
     }
     return data as User;
   }
