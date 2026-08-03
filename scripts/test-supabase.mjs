@@ -8,10 +8,15 @@
  */
 
 import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import path from 'path';
 import { createClient } from '@supabase/supabase-js';
 
 // ── Load .env.local manually (no dotenv dependency needed) ───────────────────
-const envPath = new URL('../.env.local', import.meta.url).pathname;
+// fileURLToPath decodes percent-encoded characters (e.g. %20 → space), which
+// is required when the project directory contains spaces.
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const envPath = path.join(__dirname, '..', '.env.local');
 let envContent;
 try {
   envContent = readFileSync(envPath, 'utf8');
