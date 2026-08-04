@@ -3,6 +3,7 @@ import { ConsoleLogger } from '@/infrastructure/logger/console.logger';
 import { getDbClient } from '@/infrastructure/db/client';
 import { SupabaseAuthProvider } from '@/providers/auth/supabase-auth.provider';
 import { OpenAIProvider } from '@/providers/ai/openai.provider';
+import { NullAIProvider } from '@/providers/ai/null-ai.provider';
 import { SupabaseStorageProvider } from '@/providers/storage/supabase-storage.provider';
 import { AuthRepository } from '@/features/auth/auth.repository';
 import { AuthService } from '@/features/auth/auth.service';
@@ -26,7 +27,9 @@ function buildContainer() {
     env.SUPABASE_SERVICE_ROLE_KEY,
     logger,
   );
-  const aiProvider = new OpenAIProvider(env.OPENAI_API_KEY, env.OPENAI_MODEL, logger);
+  const aiProvider = env.OPENAI_API_KEY
+    ? new OpenAIProvider(env.OPENAI_API_KEY, env.OPENAI_MODEL, logger)
+    : new NullAIProvider();
   const storageProvider = new SupabaseStorageProvider(
     env.SUPABASE_URL,
     env.SUPABASE_SERVICE_ROLE_KEY,

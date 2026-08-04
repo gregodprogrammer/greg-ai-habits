@@ -17,7 +17,8 @@ const envSchema = z.object({
 
   JWT_SECRET: z.string().min(32, 'JWT_SECRET must be at least 32 characters'),
 
-  OPENAI_API_KEY: z.string().min(1, 'OPENAI_API_KEY is required'),
+  // Optional: AI Coach features degrade gracefully when this is absent.
+  OPENAI_API_KEY: z.string().optional(),
   OPENAI_MODEL: z.string().default('gpt-4o-mini'),
 });
 

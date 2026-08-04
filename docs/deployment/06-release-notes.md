@@ -94,6 +94,7 @@ This is the first production release of **Greg AI Habits**, an AI-powered produc
 | TypeScript errors in budget/tasks tests | Missing `color` field in DTO test fixtures |
 | `output: standalone` | Made conditional on `NEXT_STANDALONE=true` (Dockerfile only) — Vercel uses serverless pipeline |
 | `DATABASE_URL` required | Changed to optional — app uses Supabase JS, not direct Postgres |
+| `OPENAI_API_KEY` required | Changed to optional — app builds, starts, and runs without it; AI features return a 503 with a user-friendly message via `NullAIProvider` |
 | Node version | Added `.nvmrc` pinning Node 20 |
 
 ---
